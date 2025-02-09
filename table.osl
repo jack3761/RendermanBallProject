@@ -1,0 +1,8 @@
+shader table (
+    output color Cout=0,
+    output float Bout=0
+)
+{
+    Cout = texture("source_images/Hackberry_pxr128.tx", u*4, v*4);
+    Bout = texture("source_images/Hackberry_pxr128_bmp.tx", u*4, v*4);
+}

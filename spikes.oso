@@ -1,0 +1,681 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.11.0@OPROJECT_VERSION_RELEASE_TYPE@
+# options: 
+shader spikes
+param	color	Cin	0 0 0		%read{0,0} %write{2147483647,-1}
+oparam	float	dispAmount	0		%read{72,237} %write{1,237}
+oparam	float	mask	0		%read{2147483647,-1} %write{2147483647,-1}
+oparam	float	Sout	0		%read{2147483647,-1} %write{84,86}
+oparam	float	Rout	0		%read{153,203} %write{83,203}
+oparam	color	Cout	0 0 0		%read{80,206} %write{0,206}
+global	point	P	%read{89,157} %write{2147483647,-1}
+global	float	u	%read{13,221} %write{2147483647,-1}
+global	float	v	%read{7,234} %write{2147483647,-1}
+local	float	fuzz	%read{229,230} %write{2,220}
+local	float	radius	%read{42,58} %write{3,3}
+local	int[12]	numDisks	%read{20,20} %write{4,4}
+local	int	repeatCountV	%read{6,6} %write{5,5}
+local	float	vTile	%read{40,40} %write{12,12}
+local	float	new_u	%read{16,22} %write{13,16}
+local	int	repeatCountU	%read{21,21} %write{20,20}
+local	float	uTile	%read{40,40} %write{27,27}
+local	point	center	%read{39,41} %write{28,39}
+local	float	randomOffsetX	%read{38,38} %write{32,32}
+local	float	randomOffsetY	%read{38,38} %write{37,37}
+local	point	here	%read{41,41} %write{40,40}
+local	float	dist	%read{42,43} %write{41,41}
+local	float	dispShape	%read{63,78} %write{46,70}
+local	float	dispShapeBottom	%read{63,63} %write{53,53}
+local	float	dispShapeTop	%read{64,64} %write{62,62}
+local	float	___326_s	%read{82,84} %write{75,82}
+local	float	___327_factor	%read{80,81} %write{78,78}
+local	color	___327_tipColor	%read{80,80} %write{79,79}
+local	float	___328_mag	%read{93,103} %write{87,102}
+local	point	___328_PP	%read{90,98} %write{89,89}
+local	point	___328_UVW	%read{113,163} %write{105,155}
+local	float	___328_Scale	%read{113,163} %write{106,156}
+local	float	___328_Radius	%read{118,201} %write{110,160}
+local	float	___328_Col	%read{2147483647,-1} %write{111,161}
+local	float	___328_Dist	%read{152,206} %write{112,201}
+local	point	___328_pnt	%read{118,201} %write{113,163}
+local	float	___328_pri	%read{118,201} %write{114,201}
+local	float	___328_freq	%read{2147483647,-1} %write{115,165}
+local	float	___329_x	%read{118,151} %write{117,151}
+local	float	___331_y	%read{118,151} %write{118,151}
+local	float	___333_z	%read{118,151} %write{118,151}
+local	point	___334_rndpoint	%read{118,151} %write{118,151}
+local	point	___334_dotcenter	%read{118,151} %write{118,151}
+local	float	___334_dist	%read{118,151} %write{118,151}
+local	float	___334_priority	%read{118,151} %write{118,151}
+local	float	___336_x	%read{168,201} %write{167,201}
+local	float	___338_y	%read{168,201} %write{168,201}
+local	float	___340_z	%read{168,201} %write{168,201}
+local	point	___341_rndpoint	%read{168,201} %write{168,201}
+local	point	___341_dotcenter	%read{168,201} %write{168,201}
+local	float	___341_dist	%read{168,201} %write{168,201}
+local	float	___341_priority	%read{168,201} %write{168,201}
+local	color	___328_dot_col	%read{206,206} %write{205,205}
+local	float	band	%read{211,228} %write{207,215}
+local	float	bandWidth	%read{225,227} %write{216,216}
+local	float	fuzz2	%read{232,233} %write{224,224}
+local	float	start	%read{229,230} %write{226,226}
+local	float	end	%read{232,233} %write{228,228}
+local	float	inLine	%read{236,236} %write{235,235}
+const	int	$const1	0		%read{1,191} %write{2147483647,-1}
+const	float	$const2	0.699999988		%read{2,86} %write{2147483647,-1}
+const	float	$const3	0.25		%read{3,3} %write{2147483647,-1}
+const	int[12]	$const4	0 6 12 17 20 22 22 20 17 12 6 0 		%read{4,4} %write{2147483647,-1}
+const	int	$const5	12		%read{5,5} %write{2147483647,-1}
+temp	float	$tmp1	%read{9,12} %write{7,7}
+temp	float	$tmp2	%read{7,7} %write{6,6}
+const	int	$const6	1		%read{106,176} %write{2147483647,-1}
+const	float	$const7	1		%read{9,201} %write{2147483647,-1}
+const	string	$const8	"mod"		%read{8,65} %write{2147483647,-1}
+temp	float	$tmp3	%read{11,11} %write{10,10}
+temp	float	$tmp4	%read{10,10} %write{9,9}
+temp	float	$tmp5	%read{12,12} %write{11,11}
+const	float	$const9	0.5		%read{14,207} %write{2147483647,-1}
+temp	int	$tmp6	%read{15,15} %write{14,14}
+const	float	$const10	0.200000003		%read{16,16} %write{2147483647,-1}
+temp	int	$tmp7	%read{20,20} %write{19,19}
+temp	float	$tmp8	%read{19,19} %write{18,18}
+temp	float	$tmp9	%read{18,18} %write{17,17}
+const	float	$const11	12		%read{17,17} %write{2147483647,-1}
+temp	float	$tmp10	%read{24,27} %write{22,22}
+temp	float	$tmp11	%read{22,22} %write{21,21}
+temp	float	$tmp12	%read{26,26} %write{25,25}
+temp	float	$tmp13	%read{25,25} %write{24,24}
+temp	float	$tmp14	%read{27,27} %write{26,26}
+const	point	$const12	0.5 0.5 0		%read{28,28} %write{2147483647,-1}
+temp	float	$tmp15	%read{31,31} %write{30,30}
+const	string	$const13	"perlin"		%read{30,213} %write{2147483647,-1}
+const	float	$const14	10		%read{29,98} %write{2147483647,-1}
+temp	float	$tmp16	%read{30,30} %write{29,29}
+temp	float	$tmp17	%read{32,32} %write{31,31}
+const	float	$const15	0.100000001		%read{32,103} %write{2147483647,-1}
+temp	float	$tmp18	%read{36,36} %write{35,35}
+temp	float	$tmp19	%read{34,34} %write{33,33}
+const	float	$const16	100		%read{34,34} %write{2147483647,-1}
+temp	float	$tmp20	%read{35,35} %write{34,34}
+temp	float	$tmp21	%read{37,37} %write{36,36}
+temp	point	$tmp22	%read{39,39} %write{38,38}
+const	float	$const17	0		%read{38,181} %write{2147483647,-1}
+temp	float	$tmp23	%read{44,44} %write{42,42}
+temp	float	$tmp24	%read{44,44} %write{43,43}
+temp	float	$tmp25	%read{45,45} %write{44,44}
+temp	float	$tmp26	%read{46,46} %write{45,45}
+temp	float	$tmp27	%read{48,48} %write{47,47}
+temp	float	$tmp28	%read{51,51} %write{48,48}
+temp	float	$tmp29	%read{50,50} %write{49,49}
+temp	float	$tmp30	%read{51,51} %write{50,50}
+temp	float	$tmp31	%read{52,52} %write{51,51}
+temp	float	$tmp32	%read{53,53} %write{52,52}
+temp	float	$tmp33	%read{56,56} %write{54,54}
+temp	float	$tmp34	%read{56,56} %write{55,55}
+temp	float	$tmp35	%read{60,60} %write{56,56}
+temp	float	$tmp36	%read{59,59} %write{57,57}
+temp	float	$tmp37	%read{59,59} %write{58,58}
+temp	float	$tmp38	%read{60,60} %write{59,59}
+temp	float	$tmp39	%read{61,61} %write{60,60}
+temp	float	$tmp40	%read{62,62} %write{61,61}
+temp	float	$tmp41	%read{70,70} %write{69,69}
+const	float	$const19	0.00999999978		%read{66,156} %write{2147483647,-1}
+temp	float	$tmp42	%read{68,68} %write{67,67}
+temp	float	$tmp43	%read{67,67} %write{66,66}
+temp	float	$tmp44	%read{69,69} %write{68,68}
+const	float	$const20	0.300000012		%read{71,71} %write{2147483647,-1}
+temp	float	$tmp45	%read{72,72} %write{71,71}
+temp	int	$tmp46	%read{74,74} %write{73,73}
+const	float	$const21	0.800000012		%read{76,202} %write{2147483647,-1}
+temp	int	$tmp47	%read{77,77} %write{76,76}
+const	string	$const22	"rgb"		%read{79,79} %write{2147483647,-1}
+const	float	$const23	0.140000001		%read{79,79} %write{2147483647,-1}
+const	float	$const24	0.600000024		%read{81,81} %write{2147483647,-1}
+temp	float	$tmp48	%read{82,82} %write{81,81}
+const	float	$const25	0.400000006		%read{83,84} %write{2147483647,-1}
+const	string	$const26	"shader"		%read{89,89} %write{2147483647,-1}
+const	string	$const27	"transform"		%read{88,154} %write{2147483647,-1}
+const	string	$const28	"common"		%read{89,155} %write{2147483647,-1}
+temp	float	$tmp49	%read{92,92} %write{91,91}
+temp	point	$tmp50	%read{91,91} %write{90,90}
+const	float	$const30	2		%read{90,227} %write{2147483647,-1}
+const	float	$const31	0.0500000007		%read{92,100} %write{2147483647,-1}
+temp	float	$tmp51	%read{93,93} %write{92,92}
+temp	float	$tmp52	%read{96,96} %write{95,95}
+temp	point	$tmp53	%read{95,95} %write{94,94}
+const	float	$const33	5		%read{94,221} %write{2147483647,-1}
+temp	float	$tmp54	%read{97,97} %write{96,96}
+temp	float	$tmp55	%read{100,100} %write{99,99}
+temp	point	$tmp56	%read{99,99} %write{98,98}
+temp	float	$tmp57	%read{101,101} %write{100,100}
+const	string	$const34	"object"		%read{105,155} %write{2147483647,-1}
+temp	float	$tmp58	%read{110,110} %write{109,109}
+temp	float	$tmp59	%read{109,109} %write{108,108}
+const	string	$const35	"uperlin"		%read{108,222} %write{2147483647,-1}
+temp	point	$tmp60	%read{108,108} %write{107,107}
+const	float	$const37	20		%read{107,107} %write{2147483647,-1}
+const	int	$const38	-1		%read{114,175} %write{2147483647,-1}
+const	int	$const39	100		%read{115,165} %write{2147483647,-1}
+temp	int	$tmp61	%read{118,151} %write{118,151}
+temp	int	$tmp62	%read{116,151} %write{117,151}
+temp	int	$tmp63	%read{118,151} %write{118,151}
+temp	int	$tmp64	%read{118,151} %write{118,151}
+temp	int	$tmp65	%read{118,151} %write{118,151}
+temp	int	$tmp66	%read{118,151} %write{118,151}
+temp	point	$tmp67	%read{118,151} %write{118,151}
+temp	point	$tmp68	%read{118,151} %write{118,151}
+temp	point	$tmp69	%read{118,151} %write{118,151}
+temp	vector	$tmp70	%read{118,151} %write{118,151}
+const	string	$const40	"cell"		%read{132,186} %write{2147483647,-1}
+const	float	$const41	0.899999976		%read{133,183} %write{2147483647,-1}
+temp	vector	$tmp71	%read{118,151} %write{118,151}
+temp	int	$tmp72	%read{118,151} %write{118,151}
+temp	int	$tmp73	%read{118,151} %write{118,151}
+temp	int	$tmp74	%read{118,151} %write{118,151}
+temp	int	$tmp75	%read{118,151} %write{118,151}
+temp	float	$tmp76	%read{2147483647,-1} %write{118,151}
+temp	float	$tmp77	%read{2147483647,-1} %write{118,151}
+temp	float	$tmp78	%read{2147483647,-1} %write{118,151}
+temp	float	$tmp79	%read{153,153} %write{152,152}
+temp	float	$tmp80	%read{160,160} %write{159,159}
+temp	float	$tmp81	%read{159,159} %write{158,158}
+temp	point	$tmp82	%read{158,158} %write{157,157}
+temp	int	$tmp83	%read{168,201} %write{168,201}
+temp	int	$tmp84	%read{166,201} %write{167,201}
+temp	int	$tmp85	%read{168,201} %write{168,201}
+temp	int	$tmp86	%read{168,201} %write{168,201}
+temp	int	$tmp87	%read{168,201} %write{168,201}
+temp	int	$tmp88	%read{168,201} %write{168,201}
+temp	point	$tmp89	%read{168,201} %write{168,201}
+temp	point	$tmp90	%read{168,201} %write{168,201}
+temp	point	$tmp91	%read{168,201} %write{168,201}
+temp	vector	$tmp92	%read{168,201} %write{168,201}
+temp	vector	$tmp93	%read{168,201} %write{168,201}
+temp	int	$tmp94	%read{168,201} %write{168,201}
+temp	int	$tmp95	%read{168,201} %write{168,201}
+temp	int	$tmp96	%read{168,201} %write{168,201}
+temp	int	$tmp97	%read{168,201} %write{168,201}
+temp	float	$tmp98	%read{2147483647,-1} %write{168,201}
+temp	float	$tmp99	%read{2147483647,-1} %write{168,201}
+temp	float	$tmp100	%read{2147483647,-1} %write{168,201}
+temp	float	$tmp101	%read{203,203} %write{202,202}
+const	float	$const42	0.00499999989		%read{204,236} %write{2147483647,-1}
+temp	float	$tmp102	%read{205,205} %write{204,204}
+temp	float	$tmp103	%read{210,210} %write{209,209}
+temp	float	$tmp104	%read{209,209} %write{208,208}
+const	float	$const44	25		%read{208,208} %write{2147483647,-1}
+const	float	$const45	0.00200000009		%read{210,214} %write{2147483647,-1}
+temp	float	$tmp105	%read{211,211} %write{210,210}
+temp	float	$tmp106	%read{214,214} %write{213,213}
+temp	float	$tmp107	%read{213,213} %write{212,212}
+const	float	$const47	50		%read{212,212} %write{2147483647,-1}
+temp	float	$tmp108	%read{215,215} %write{214,214}
+const	float	$const48	0.00100000005		%read{216,223} %write{2147483647,-1}
+const	float	$const49	9.99999975e-05		%read{220,224} %write{2147483647,-1}
+temp	float	$tmp109	%read{219,219} %write{218,218}
+temp	float	$tmp110	%read{218,218} %write{217,217}
+temp	float	$tmp111	%read{220,220} %write{219,219}
+temp	float	$tmp112	%read{223,223} %write{222,222}
+temp	float	$tmp113	%read{222,222} %write{221,221}
+temp	float	$tmp114	%read{224,224} %write{223,223}
+temp	float	$tmp115	%read{226,226} %write{225,225}
+temp	float	$tmp116	%read{228,228} %write{227,227}
+temp	float	$tmp117	%read{235,235} %write{231,231}
+temp	float	$tmp118	%read{231,231} %write{229,229}
+temp	float	$tmp119	%read{231,231} %write{230,230}
+temp	float	$tmp120	%read{235,235} %write{234,234}
+temp	float	$tmp121	%read{234,234} %write{232,232}
+temp	float	$tmp122	%read{234,234} %write{233,233}
+temp	float	$tmp123	%read{237,237} %write{236,236}
+code ___main___
+# spikes.osl:10
+#     Cout = Cin;
+	assign		Cout Cin 	%filename{"spikes.osl"} %line{10} %argrw{"wr"}
+# spikes.osl:14
+#     dispAmount = 0;
+	assign		dispAmount $const1 	%line{14} %argrw{"wr"}
+# spikes.osl:15
+#     float fuzz = 0.7;
+	assign		fuzz $const2 	%line{15} %argrw{"wr"}
+# spikes.osl:16
+#     float radius = 0.25;
+	assign		radius $const3 	%line{16} %argrw{"wr"}
+# spikes.osl:18
+#     int numDisks[12] = {0, 6, 12, 17, 20, 22, 22, 20, 17, 12, 6, 0};
+	assign		numDisks $const4 	%line{18} %argrw{"wr"}
+# spikes.osl:20
+#     int repeatCountV = 12;
+	assign		repeatCountV $const5 	%line{20} %argrw{"wr"}
+# spikes.osl:21
+#     float vTile = mod(repeatCountV * v, 1);
+	assign		$tmp2 repeatCountV 	%line{21} %argrw{"wr"}
+	mul		$tmp1 $tmp2 v 	%argrw{"wrr"}
+	functioncall	$const8 13 	%argrw{"r"}
+# /opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp4 $tmp1 $const7 	%filename{"/opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp3 $tmp4 	%argrw{"wr"}
+	mul		$tmp5 $const7 $tmp3 	%argrw{"wrr"}
+	sub		vTile $tmp1 $tmp5 	%argrw{"wrr"}
+# spikes.osl:23
+#     float new_u = u;
+	assign		new_u u 	%filename{"spikes.osl"} %line{23} %argrw{"wr"}
+# spikes.osl:24
+#     if (v>0.5)
+	gt		$tmp6 v $const9 	%line{24} %argrw{"wrr"}
+	if		$tmp6 17 17 	%argrw{"r"}
+# spikes.osl:26
+#         new_u += 0.2;
+	add		new_u new_u $const10 	%line{26} %argrw{"wrr"}
+# spikes.osl:29
+#     int repeatCountU = numDisks[int(floor(v * 12))];
+	mul		$tmp9 v $const11 	%line{29} %argrw{"wrr"}
+	floor		$tmp8 $tmp9 	%argrw{"wr"}
+	assign		$tmp7 $tmp8 	%argrw{"wr"}
+	aref		repeatCountU numDisks $tmp7 	%argrw{"wrr"}
+# spikes.osl:30
+#     float uTile =  mod(repeatCountU * new_u, 1);    
+	assign		$tmp11 repeatCountU 	%line{30} %argrw{"wr"}
+	mul		$tmp10 $tmp11 new_u 	%argrw{"wrr"}
+	functioncall	$const8 28 	%argrw{"r"}
+# /opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp13 $tmp10 $const7 	%filename{"/opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp12 $tmp13 	%argrw{"wr"}
+	mul		$tmp14 $const7 $tmp12 	%argrw{"wrr"}
+	sub		uTile $tmp10 $tmp14 	%argrw{"wrr"}
+# spikes.osl:34
+#     point center = point(0.5, 0.5, 0);
+	assign		center $const12 	%filename{"spikes.osl"} %line{34} %argrw{"wr"}
+# spikes.osl:35
+#     float randomOffsetX = (noise("perlin", u * 10.0) - 0.5) * 0.1;
+	mul		$tmp16 u $const14 	%line{35} %argrw{"wrr"}
+	noise		$tmp15 $const13 $tmp16 	%argrw{"wrr"}
+	sub		$tmp17 $tmp15 $const9 	%argrw{"wrr"}
+	mul		randomOffsetX $tmp17 $const15 	%argrw{"wrr"}
+# spikes.osl:36
+#     float randomOffsetY = (noise("perlin", v * 10.0 + 100.0) - 0.5) * 0.1;
+	mul		$tmp19 v $const14 	%line{36} %argrw{"wrr"}
+	add		$tmp20 $tmp19 $const16 	%argrw{"wrr"}
+	noise		$tmp18 $const13 $tmp20 	%argrw{"wrr"}
+	sub		$tmp21 $tmp18 $const9 	%argrw{"wrr"}
+	mul		randomOffsetY $tmp21 $const15 	%argrw{"wrr"}
+# spikes.osl:38
+#     center += point(randomOffsetX, randomOffsetY, 0);
+	point		$tmp22 randomOffsetX randomOffsetY $const17 	%line{38} %argrw{"wrrr"}
+	add		center center $tmp22 	%argrw{"wrr"}
+# spikes.osl:39
+#     point here = point(uTile, vTile, 0);
+	point		here uTile vTile $const17 	%line{39} %argrw{"wrrr"}
+# spikes.osl:40
+#     float dist = distance(center, here);
+	distance	dist center here 	%line{40} %argrw{"wrr"}
+# spikes.osl:43
+#     float dispShape = max(0, 1 - (dist / radius) * (dist / radius));
+	div		$tmp23 dist radius 	%line{43} %argrw{"wrr"}
+	div		$tmp24 dist radius 	%argrw{"wrr"}
+	mul		$tmp25 $tmp23 $tmp24 	%argrw{"wrr"}
+	sub		$tmp26 $const7 $tmp25 	%argrw{"wrr"}
+	max		dispShape $const17 $tmp26 	%argrw{"wrr"}
+# spikes.osl:46
+#     float dispShapeBottom = max(0, 1 - (v / (radius/10)) * (v / (radius/10)));
+	div		$tmp27 radius $const14 	%line{46} %argrw{"wrr"}
+	div		$tmp28 v $tmp27 	%argrw{"wrr"}
+	div		$tmp29 radius $const14 	%argrw{"wrr"}
+	div		$tmp30 v $tmp29 	%argrw{"wrr"}
+	mul		$tmp31 $tmp28 $tmp30 	%argrw{"wrr"}
+	sub		$tmp32 $const7 $tmp31 	%argrw{"wrr"}
+	max		dispShapeBottom $const17 $tmp32 	%argrw{"wrr"}
+# spikes.osl:47
+#     float dispShapeTop = max(0, 1 - ((1 - v) / (radius/10)) * ((1 - v) / (radius/10)));
+	sub		$tmp33 $const7 v 	%line{47} %argrw{"wrr"}
+	div		$tmp34 radius $const14 	%argrw{"wrr"}
+	div		$tmp35 $tmp33 $tmp34 	%argrw{"wrr"}
+	sub		$tmp36 $const7 v 	%argrw{"wrr"}
+	div		$tmp37 radius $const14 	%argrw{"wrr"}
+	div		$tmp38 $tmp36 $tmp37 	%argrw{"wrr"}
+	mul		$tmp39 $tmp35 $tmp38 	%argrw{"wrr"}
+	sub		$tmp40 $const7 $tmp39 	%argrw{"wrr"}
+	max		dispShapeTop $const17 $tmp40 	%argrw{"wrr"}
+# spikes.osl:50
+#     dispShape += dispShapeBottom;
+	add		dispShape dispShape dispShapeBottom 	%line{50} %argrw{"wrr"}
+# spikes.osl:51
+#     dispShape += dispShapeTop;
+	add		dispShape dispShape dispShapeTop 	%line{51} %argrw{"wrr"}
+# spikes.osl:54
+#     dispShape += mod(dispShape, 0.01);
+	functioncall	$const8 70 	%line{54} %argrw{"r"}
+# /opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h:154
+# float  mod (float  a, float  b) { return a - b*floor(a/b); }
+	div		$tmp43 dispShape $const19 	%filename{"/opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h"} %line{154} %argrw{"wrr"}
+	floor		$tmp42 $tmp43 	%argrw{"wr"}
+	mul		$tmp44 $const19 $tmp42 	%argrw{"wrr"}
+	sub		$tmp41 dispShape $tmp44 	%argrw{"wrr"}
+# spikes.osl:54
+#     dispShape += mod(dispShape, 0.01);
+	add		dispShape dispShape $tmp41 	%filename{"spikes.osl"} %line{54} %argrw{"wrr"}
+# spikes.osl:56
+#     dispAmount += dispShape * 0.3; 
+	mul		$tmp45 dispShape $const20 	%line{56} %argrw{"wrr"}
+	add		dispAmount dispAmount $tmp45 	%argrw{"wrr"}
+# spikes.osl:59
+#     if (dispShape) 
+	neq		$tmp46 dispShape $const17 	%line{59} %argrw{"wrr"}
+	if		$tmp46 85 207 	%argrw{"r"}
+# spikes.osl:61
+#         float s = 0.0;
+	assign		___326_s $const17 	%line{61} %argrw{"wr"}
+# spikes.osl:62
+#         if (dispShape > 0.8) {
+	gt		$tmp47 dispShape $const21 	%line{62} %argrw{"wrr"}
+	if		$tmp47 83 83 	%argrw{"r"}
+# spikes.osl:63
+#             float factor = smoothstep(0.8, 1.0, dispShape);
+	smoothstep	___327_factor $const21 $const7 dispShape 	%line{63} %argrw{"wrrr"}
+# spikes.osl:64
+#             color tipColor = color("rgb", 1.0, 0.14, 0.0);
+	color		___327_tipColor $const22 $const7 $const23 $const17 	%line{64} %argrw{"wrrrr"}
+# spikes.osl:65
+#             Cout = mix(Cout, tipColor, factor);
+	mix		Cout Cout ___327_tipColor ___327_factor 	%line{65} %argrw{"wrrr"}
+# spikes.osl:66
+#             s += factor * 0.6;  // increase shininess at the tips
+	mul		$tmp48 ___327_factor $const24 	%line{66} %argrw{"wrr"}
+	add		___326_s ___326_s $tmp48 	%argrw{"wrr"}
+# spikes.osl:68
+#         Rout = 0.4;
+	assign		Rout $const25 	%line{68} %argrw{"wr"}
+# spikes.osl:69
+#         Sout = 0.4 + s;
+	add		Sout $const25 ___326_s 	%line{69} %argrw{"wrr"}
+# spikes.osl:74
+#         Rout = 0.1;
+	assign		Rout $const15 	%line{74} %argrw{"wr"}
+# spikes.osl:75
+#         Sout = 0.7;
+	assign		Sout $const2 	%line{75} %argrw{"wr"}
+# spikes.osl:77
+#         float mag = 0;
+	assign		___328_mag $const1 	%line{77} %argrw{"wr"}
+# spikes.osl:78
+#         point PP=transform("shader",P);
+	functioncall	$const27 90 	%line{78} %argrw{"r"}
+# /opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___328_PP $const28 $const26 P 	%filename{"/opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h"} %line{285} %argrw{"wrrr"}
+# spikes.osl:80
+#         mag += noise("perlin", PP*2)*0.05;
+	mul		$tmp50 ___328_PP $const30 	%filename{"spikes.osl"} %line{80} %argrw{"wrr"}
+	noise		$tmp49 $const13 $tmp50 	%argrw{"wrr"}
+	mul		$tmp51 $tmp49 $const31 	%argrw{"wrr"}
+	add		___328_mag ___328_mag $tmp51 	%argrw{"wrr"}
+# spikes.osl:81
+#         mag += noise("perlin", PP*5)*0.05;
+	mul		$tmp53 ___328_PP $const33 	%line{81} %argrw{"wrr"}
+	noise		$tmp52 $const13 $tmp53 	%argrw{"wrr"}
+	mul		$tmp54 $tmp52 $const31 	%argrw{"wrr"}
+	add		___328_mag ___328_mag $tmp54 	%argrw{"wrr"}
+# spikes.osl:82
+#         mag += noise("perlin", PP*10)*0.05;
+	mul		$tmp56 ___328_PP $const14 	%line{82} %argrw{"wrr"}
+	noise		$tmp55 $const13 $tmp56 	%argrw{"wrr"}
+	mul		$tmp57 $tmp55 $const31 	%argrw{"wrr"}
+	add		___328_mag ___328_mag $tmp57 	%argrw{"wrr"}
+# spikes.osl:83
+#         mag = smoothstep(0, 0.1, mag);
+	smoothstep	___328_mag $const17 $const15 ___328_mag 	%line{83} %argrw{"wrrr"}
+# spikes.osl:85
+#         Rout = 0.1 + mag;
+	add		Rout $const15 ___328_mag 	%line{85} %argrw{"wrr"}
+# spikes.osl:89
+#         point UVW = transform("object", P);
+	functioncall	$const27 106 	%line{89} %argrw{"r"}
+# /opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___328_UVW $const28 $const34 P 	%filename{"/opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h"} %line{285} %argrw{"wrrr"}
+# spikes.osl:90
+#         float Scale  = 1;
+	assign		___328_Scale $const6 	%filename{"spikes.osl"} %line{90} %argrw{"wr"}
+# spikes.osl:91
+#         float Radius = 0.5*abs(noise("uperlin", P*20));
+	mul		$tmp60 P $const37 	%line{91} %argrw{"wrr"}
+	noise		$tmp59 $const35 $tmp60 	%argrw{"wrr"}
+	abs		$tmp58 $tmp59 	%argrw{"wr"}
+	mul		___328_Radius $const9 $tmp58 	%argrw{"wrr"}
+# spikes.osl:93
+#         float Col = 0;
+	assign		___328_Col $const1 	%line{93} %argrw{"wr"}
+# spikes.osl:94
+#         float Dist   = 0;
+	assign		___328_Dist $const1 	%line{94} %argrw{"wr"}
+# spikes.osl:95
+#         point pnt = UVW / Scale;
+	div		___328_pnt ___328_UVW ___328_Scale 	%line{95} %argrw{"wrr"}
+# spikes.osl:96
+#         float pri = -1;
+	assign		___328_pri $const38 	%line{96} %argrw{"wr"}
+# spikes.osl:97
+#         float freq = 100;
+	assign		___328_freq $const39 	%line{97} %argrw{"wr"}
+# spikes.osl:99
+#         for (float x = -1; x <= 1; x++) 
+	for		$tmp62 118 120 150 152 	%line{99} %argrw{"r"}
+	assign		___329_x $const38 	%argrw{"wr"}
+	le		$tmp61 ___329_x $const6 	%argrw{"wrr"}
+	neq		$tmp62 $tmp61 $const1 	%argrw{"wrr"}
+# spikes.osl:101
+#             for (float y = -1; y <= 1; y++) 
+	for		$tmp64 122 124 148 150 	%line{101} %argrw{"r"}
+	assign		___331_y $const38 	%argrw{"wr"}
+	le		$tmp63 ___331_y $const6 	%argrw{"wrr"}
+	neq		$tmp64 $tmp63 $const1 	%argrw{"wrr"}
+# spikes.osl:103
+#                 for(float z = -1; z <= 1; z++) 
+	for		$tmp66 126 128 146 148 	%line{103} %argrw{"r"}
+	assign		___333_z $const38 	%argrw{"wr"}
+	le		$tmp65 ___333_z $const6 	%argrw{"wrr"}
+	neq		$tmp66 $tmp65 $const1 	%argrw{"wrr"}
+# spikes.osl:105
+#                     point rndpoint = floor(pnt) + point(x, y, z) + 0.00;
+	floor		$tmp67 ___328_pnt 	%line{105} %argrw{"wr"}
+	point		$tmp68 ___329_x ___331_y ___333_z 	%argrw{"wrrr"}
+	add		$tmp69 $tmp67 $tmp68 	%argrw{"wrr"}
+	add		___334_rndpoint $tmp69 $const17 	%argrw{"wrr"}
+# spikes.osl:106
+#                     point dotcenter = rndpoint + noise("cell", rndpoint, 1)*0.9;
+	noise		$tmp70 $const40 ___334_rndpoint $const7 	%line{106} %argrw{"wrrr"}
+	mul		$tmp71 $tmp70 $const41 	%argrw{"wrr"}
+	add		___334_dotcenter ___334_rndpoint $tmp71 	%argrw{"wrr"}
+# spikes.osl:107
+#                     float dist = distance(dotcenter, pnt);
+	distance	___334_dist ___334_dotcenter ___328_pnt 	%line{107} %argrw{"wrr"}
+# spikes.osl:108
+#                     float priority = noise("cell", rndpoint, 1);
+	noise		___334_priority $const40 ___334_rndpoint $const7 	%line{108} %argrw{"wrrr"}
+# spikes.osl:110
+#                     if (dist < Radius && priority > pri)
+	lt		$tmp72 ___334_dist ___328_Radius 	%line{110} %argrw{"wrr"}
+	neq		$tmp73 $tmp72 $const1 	%argrw{"wrr"}
+	if		$tmp73 143 143 	%argrw{"r"}
+	gt		$tmp74 ___334_priority ___328_pri 	%argrw{"wrr"}
+	neq		$tmp75 $tmp74 $const1 	%argrw{"wrr"}
+	assign		$tmp73 $tmp75 	%argrw{"wr"}
+	if		$tmp73 146 146 	%argrw{"r"}
+# spikes.osl:112
+#                         pri = priority;
+	assign		___328_pri ___334_priority 	%line{112} %argrw{"wr"}
+# spikes.osl:113
+#                         Dist   = dist / Radius;
+	div		___328_Dist ___334_dist ___328_Radius 	%line{113} %argrw{"wrr"}
+# spikes.osl:103
+#                 for(float z = -1; z <= 1; z++) 
+	assign		$tmp76 ___333_z 	%line{103} %argrw{"wr"}
+	add		___333_z ___333_z $const7 	%argrw{"wrr"}
+# spikes.osl:101
+#             for (float y = -1; y <= 1; y++) 
+	assign		$tmp77 ___331_y 	%line{101} %argrw{"wr"}
+	add		___331_y ___331_y $const7 	%argrw{"wrr"}
+# spikes.osl:99
+#         for (float x = -1; x <= 1; x++) 
+	assign		$tmp78 ___329_x 	%line{99} %argrw{"wr"}
+	add		___329_x ___329_x $const7 	%argrw{"wrr"}
+# spikes.osl:118
+#         Rout += Dist*0.8;
+	mul		$tmp79 ___328_Dist $const21 	%line{118} %argrw{"wrr"}
+	add		Rout Rout $tmp79 	%argrw{"wrr"}
+# spikes.osl:122
+#         UVW = transform("object", P);
+	functioncall	$const27 156 	%line{122} %argrw{"r"}
+# /opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h:285
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	___328_UVW $const28 $const34 P 	%filename{"/opt/pixar/RenderManProServer-25.2/lib/osl/include/stdosl.h"} %line{285} %argrw{"wrrr"}
+# spikes.osl:123
+#         Scale  = 0.01;
+	assign		___328_Scale $const19 	%filename{"spikes.osl"} %line{123} %argrw{"wr"}
+# spikes.osl:124
+#         Radius = 0.5*abs(noise("uperlin", P*5));
+	mul		$tmp82 P $const33 	%line{124} %argrw{"wrr"}
+	noise		$tmp81 $const35 $tmp82 	%argrw{"wrr"}
+	abs		$tmp80 $tmp81 	%argrw{"wr"}
+	mul		___328_Radius $const9 $tmp80 	%argrw{"wrr"}
+# spikes.osl:126
+#         Col = 0;
+	assign		___328_Col $const1 	%line{126} %argrw{"wr"}
+# spikes.osl:127
+#         Dist   = 0;
+	assign		___328_Dist $const1 	%line{127} %argrw{"wr"}
+# spikes.osl:128
+#         pnt = UVW / Scale;
+	div		___328_pnt ___328_UVW ___328_Scale 	%line{128} %argrw{"wrr"}
+# spikes.osl:129
+#         pri = -1;
+	assign		___328_pri $const38 	%line{129} %argrw{"wr"}
+# spikes.osl:130
+#         freq = 100;
+	assign		___328_freq $const39 	%line{130} %argrw{"wr"}
+# spikes.osl:132
+#         for (float x = -1; x <= 1; x++) 
+	for		$tmp84 168 170 200 202 	%line{132} %argrw{"r"}
+	assign		___336_x $const38 	%argrw{"wr"}
+	le		$tmp83 ___336_x $const6 	%argrw{"wrr"}
+	neq		$tmp84 $tmp83 $const1 	%argrw{"wrr"}
+# spikes.osl:134
+#             for (float y = -1; y <= 1; y++) 
+	for		$tmp86 172 174 198 200 	%line{134} %argrw{"r"}
+	assign		___338_y $const38 	%argrw{"wr"}
+	le		$tmp85 ___338_y $const6 	%argrw{"wrr"}
+	neq		$tmp86 $tmp85 $const1 	%argrw{"wrr"}
+# spikes.osl:136
+#                 for(float z = -1; z <= 1; z++) 
+	for		$tmp88 176 178 196 198 	%line{136} %argrw{"r"}
+	assign		___340_z $const38 	%argrw{"wr"}
+	le		$tmp87 ___340_z $const6 	%argrw{"wrr"}
+	neq		$tmp88 $tmp87 $const1 	%argrw{"wrr"}
+# spikes.osl:138
+#                     point rndpoint = floor(pnt) + point(x, y, z) + 0.00;
+	floor		$tmp89 ___328_pnt 	%line{138} %argrw{"wr"}
+	point		$tmp90 ___336_x ___338_y ___340_z 	%argrw{"wrrr"}
+	add		$tmp91 $tmp89 $tmp90 	%argrw{"wrr"}
+	add		___341_rndpoint $tmp91 $const17 	%argrw{"wrr"}
+# spikes.osl:139
+#                     point dotcenter = rndpoint + noise("cell", rndpoint, 5)*0.9;
+	noise		$tmp92 $const40 ___341_rndpoint $const33 	%line{139} %argrw{"wrrr"}
+	mul		$tmp93 $tmp92 $const41 	%argrw{"wrr"}
+	add		___341_dotcenter ___341_rndpoint $tmp93 	%argrw{"wrr"}
+# spikes.osl:140
+#                     float dist = distance(dotcenter, pnt);
+	distance	___341_dist ___341_dotcenter ___328_pnt 	%line{140} %argrw{"wrr"}
+# spikes.osl:141
+#                     float priority = noise("cell", rndpoint, 5);
+	noise		___341_priority $const40 ___341_rndpoint $const33 	%line{141} %argrw{"wrrr"}
+# spikes.osl:143
+#                     if (dist < Radius && priority > pri)
+	lt		$tmp94 ___341_dist ___328_Radius 	%line{143} %argrw{"wrr"}
+	neq		$tmp95 $tmp94 $const1 	%argrw{"wrr"}
+	if		$tmp95 193 193 	%argrw{"r"}
+	gt		$tmp96 ___341_priority ___328_pri 	%argrw{"wrr"}
+	neq		$tmp97 $tmp96 $const1 	%argrw{"wrr"}
+	assign		$tmp95 $tmp97 	%argrw{"wr"}
+	if		$tmp95 196 196 	%argrw{"r"}
+# spikes.osl:145
+#                         pri = priority;
+	assign		___328_pri ___341_priority 	%line{145} %argrw{"wr"}
+# spikes.osl:146
+#                         Dist   = dist / Radius;
+	div		___328_Dist ___341_dist ___328_Radius 	%line{146} %argrw{"wrr"}
+# spikes.osl:136
+#                 for(float z = -1; z <= 1; z++) 
+	assign		$tmp98 ___340_z 	%line{136} %argrw{"wr"}
+	add		___340_z ___340_z $const7 	%argrw{"wrr"}
+# spikes.osl:134
+#             for (float y = -1; y <= 1; y++) 
+	assign		$tmp99 ___338_y 	%line{134} %argrw{"wr"}
+	add		___338_y ___338_y $const7 	%argrw{"wrr"}
+# spikes.osl:132
+#         for (float x = -1; x <= 1; x++) 
+	assign		$tmp100 ___336_x 	%line{132} %argrw{"wr"}
+	add		___336_x ___336_x $const7 	%argrw{"wrr"}
+# spikes.osl:151
+#         Rout += Dist*0.8;
+	mul		$tmp101 ___328_Dist $const21 	%line{151} %argrw{"wrr"}
+	add		Rout Rout $tmp101 	%argrw{"wrr"}
+# spikes.osl:152
+#         color dot_col = Cout - Dist*0.005;
+	mul		$tmp102 ___328_Dist $const42 	%line{152} %argrw{"wrr"}
+	sub		___328_dot_col Cout $tmp102 	%argrw{"wrr"}
+# spikes.osl:153
+#         Cout = mix(Cout, dot_col, Dist);
+	mix		Cout Cout ___328_dot_col ___328_Dist 	%line{153} %argrw{"wrrr"}
+# spikes.osl:160
+#     float band = 0.5;
+	assign		band $const9 	%line{160} %argrw{"wr"}
+# spikes.osl:161
+#     band+=noise("perlin",u*25)*0.002;
+	mul		$tmp104 u $const44 	%line{161} %argrw{"wrr"}
+	noise		$tmp103 $const13 $tmp104 	%argrw{"wrr"}
+	mul		$tmp105 $tmp103 $const45 	%argrw{"wrr"}
+	add		band band $tmp105 	%argrw{"wrr"}
+# spikes.osl:162
+#     band+=noise("perlin",u*50)*0.002;
+	mul		$tmp107 u $const47 	%line{162} %argrw{"wrr"}
+	noise		$tmp106 $const13 $tmp107 	%argrw{"wrr"}
+	mul		$tmp108 $tmp106 $const45 	%argrw{"wrr"}
+	add		band band $tmp108 	%argrw{"wrr"}
+# spikes.osl:163
+#     float bandWidth=0.001;
+	assign		bandWidth $const48 	%line{163} %argrw{"wr"}
+# spikes.osl:164
+#     fuzz=0.0001+noise("uperlin",u*5)*0.001;
+	mul		$tmp110 u $const33 	%line{164} %argrw{"wrr"}
+	noise		$tmp109 $const35 $tmp110 	%argrw{"wrr"}
+	mul		$tmp111 $tmp109 $const48 	%argrw{"wrr"}
+	add		fuzz $const49 $tmp111 	%argrw{"wrr"}
+# spikes.osl:165
+#     float fuzz2=0.0001+noise("uperlin",u*5)*0.001;
+	mul		$tmp113 u $const33 	%line{165} %argrw{"wrr"}
+	noise		$tmp112 $const35 $tmp113 	%argrw{"wrr"}
+	mul		$tmp114 $tmp112 $const48 	%argrw{"wrr"}
+	add		fuzz2 $const49 $tmp114 	%argrw{"wrr"}
+# spikes.osl:168
+#     start=band-bandWidth/2;
+	div		$tmp115 bandWidth $const30 	%line{168} %argrw{"wrr"}
+	sub		start band $tmp115 	%argrw{"wrr"}
+# spikes.osl:169
+#     end=band+bandWidth/2;
+	div		$tmp116 bandWidth $const30 	%line{169} %argrw{"wrr"}
+	add		end band $tmp116 	%argrw{"wrr"}
+# spikes.osl:170
+#     float inLine=smoothstep(start-fuzz,start+fuzz,v)-smoothstep(end-fuzz2,end+fuzz2,v);
+	sub		$tmp118 start fuzz 	%line{170} %argrw{"wrr"}
+	add		$tmp119 start fuzz 	%argrw{"wrr"}
+	smoothstep	$tmp117 $tmp118 $tmp119 v 	%argrw{"wrrr"}
+	sub		$tmp121 end fuzz2 	%argrw{"wrr"}
+	add		$tmp122 end fuzz2 	%argrw{"wrr"}
+	smoothstep	$tmp120 $tmp121 $tmp122 v 	%argrw{"wrrr"}
+	sub		inLine $tmp117 $tmp120 	%argrw{"wrr"}
+# spikes.osl:173
+#     dispAmount += inLine*0.005;
+	mul		$tmp123 inLine $const42 	%line{173} %argrw{"wrr"}
+	add		dispAmount dispAmount $tmp123 	%argrw{"wrr"}
+	end

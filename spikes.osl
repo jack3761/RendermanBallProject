@@ -1,0 +1,175 @@
+shader spikes (
+    color Cin = 0,
+    output float dispAmount = 0,
+    output float mask = 0,
+    output float Sout = 0,
+    output float Rout = 0,
+    output color Cout =0
+)
+{
+    Cout = Cin;
+
+    // ----------- Create Spikes --------------
+    
+    dispAmount = 0;
+    float fuzz = 0.7;
+    float radius = 0.25;
+
+    int numDisks[12] = {0, 6, 12, 17, 20, 22, 22, 20, 17, 12, 6, 0};
+    
+    int repeatCountV = 12;
+    float vTile = mod(repeatCountV * v, 1);
+
+    float new_u = u;
+    if (v>0.5)
+    {
+        new_u += 0.2;
+    }
+    
+    int repeatCountU = numDisks[int(floor(v * 12))];
+    float uTile =  mod(repeatCountU * new_u, 1);    
+
+
+    // add noise to spike center
+    point center = point(0.5, 0.5, 0);
+    float randomOffsetX = (noise("perlin", u * 10.0) - 0.5) * 0.1;
+    float randomOffsetY = (noise("perlin", v * 10.0 + 100.0) - 0.5) * 0.1;
+
+    center += point(randomOffsetX, randomOffsetY, 0);
+    point here = point(uTile, vTile, 0);
+    float dist = distance(center, here);
+
+    // create spike
+    float dispShape = max(0, 1 - (dist / radius) * (dist / radius));
+
+    // create spikes on the poles
+    float dispShapeBottom = max(0, 1 - (v / (radius/10)) * (v / (radius/10)));
+    float dispShapeTop = max(0, 1 - ((1 - v) / (radius/10)) * ((1 - v) / (radius/10)));
+
+
+    dispShape += dispShapeBottom;
+    dispShape += dispShapeTop;
+
+    // add texture to spike
+    dispShape += mod(dispShape, 0.01);
+
+    dispAmount += dispShape * 0.3; 
+
+    // determine spike material properties    
+    if (dispShape) 
+    {
+        float s = 0.0;
+        if (dispShape > 0.8) {
+            float factor = smoothstep(0.8, 1.0, dispShape);
+            color tipColor = color("rgb", 1.0, 0.14, 0.0);
+            Cout = mix(Cout, tipColor, factor);
+            s += factor * 0.6;  // increase shininess at the tips
+        }
+        Rout = 0.4;
+        Sout = 0.4 + s;
+    }
+    else
+    // affects the surface of the ball that isn't a spike
+    {
+        Rout = 0.1;
+        Sout = 0.7;
+
+        float mag = 0;
+        point PP=transform("shader",P);
+
+        mag += noise("perlin", PP*2)*0.05;
+        mag += noise("perlin", PP*5)*0.05;
+        mag += noise("perlin", PP*10)*0.05;
+        mag = smoothstep(0, 0.1, mag);
+
+        Rout = 0.1 + mag;
+
+        // add blotches texture ----- adapted from https://github.com/redshift3d/RedshiftOSLShaders/blob/main/Dots.osl
+
+        point UVW = transform("object", P);
+        float Scale  = 1;
+        float Radius = 0.5*abs(noise("uperlin", P*20));
+
+        float Col = 0;
+        float Dist   = 0;
+        point pnt = UVW / Scale;
+        float pri = -1;
+        float freq = 100;
+
+        for (float x = -1; x <= 1; x++) 
+        {
+            for (float y = -1; y <= 1; y++) 
+            {
+                for(float z = -1; z <= 1; z++) 
+                {
+                    point rndpoint = floor(pnt) + point(x, y, z) + 0.00;
+                    point dotcenter = rndpoint + noise("cell", rndpoint, 1)*0.9;
+                    float dist = distance(dotcenter, pnt);
+                    float priority = noise("cell", rndpoint, 1);
+
+                    if (dist < Radius && priority > pri)
+                    {
+                        pri = priority;
+                        Dist   = dist / Radius;
+                    }
+                }
+            }
+        }
+        Rout += Dist*0.8;
+
+        // add small dot texture with same technique
+
+        UVW = transform("object", P);
+        Scale  = 0.01;
+        Radius = 0.5*abs(noise("uperlin", P*5));
+
+        Col = 0;
+        Dist   = 0;
+        pnt = UVW / Scale;
+        pri = -1;
+        freq = 100;
+
+        for (float x = -1; x <= 1; x++) 
+        {
+            for (float y = -1; y <= 1; y++) 
+            {
+                for(float z = -1; z <= 1; z++) 
+                {
+                    point rndpoint = floor(pnt) + point(x, y, z) + 0.00;
+                    point dotcenter = rndpoint + noise("cell", rndpoint, 5)*0.9;
+                    float dist = distance(dotcenter, pnt);
+                    float priority = noise("cell", rndpoint, 5);
+
+                    if (dist < Radius && priority > pri)
+                    {
+                        pri = priority;
+                        Dist   = dist / Radius;
+                    }
+                }
+            }
+        }
+        Rout += Dist*0.8;
+        color dot_col = Cout - Dist*0.005;
+        Cout = mix(Cout, dot_col, Dist);
+
+    }
+    
+
+    // ----------- Create middle binding displacement -----------
+
+    float band = 0.5;
+    band+=noise("perlin",u*25)*0.002;
+    band+=noise("perlin",u*50)*0.002;
+    float bandWidth=0.001;
+    fuzz=0.0001+noise("uperlin",u*5)*0.001;
+    float fuzz2=0.0001+noise("uperlin",u*5)*0.001;
+
+    float start,end;
+    start=band-bandWidth/2;
+    end=band+bandWidth/2;
+    float inLine=smoothstep(start-fuzz,start+fuzz,v)-smoothstep(end-fuzz2,end+fuzz2,v);
+
+
+    dispAmount += inLine*0.005;
+
+}

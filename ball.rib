@@ -1,0 +1,126 @@
+#ball.rib
+Display "spike_ball.exr" "it" "rgb"
+# Format 640 480 1.0
+Format 1920 1028 1.0
+
+Hider "raytrace" "int incremental" [1]  "int maxsamples" [1024]
+
+Integrator "PxrPathTracer" "integrator"
+PixelVariance 0.001
+
+
+# image 1
+# DepthOfField 1.4 0.1 7
+
+
+# image 2
+DepthOfField 1.4 0.05 6.8
+
+PixelFilter "gaussian" 2 2
+
+# image 1 
+# Projection "perspective" "fov" [ 35 ]
+
+# image 2
+Projection "perspective" "fov" [ 15 ]
+
+
+# image 1
+# Translate 0 -0.5 7
+
+
+# image 2
+Translate -1.5 0 8
+
+WorldBegin
+
+# image 1
+# Rotate -25 1 0 0
+# Rotate -90 0 1 0 
+
+# image 2
+Rotate -30 0 1 0 
+
+# ---------- Create environment map ----------
+AttributeBegin
+  # image 1
+	# Rotate -90 1 0 0 
+
+  # image 2
+	Rotate -100 0 1 0 
+	Rotate -90 1 0 0 
+  
+  #image 1
+	# Light "PxrDomeLight" "theLight" "float exposure" [0] "float intensity" [0.5] "string lightColorMap" ["source_images/rostock_laage_airport_4k.tx"]
+
+
+  # image 2
+	Light "PxrDomeLight" "theLight" "float exposure" [0] "float intensity" [0.7] "string lightColorMap" ["source_images/lebombo_4k.tx"]
+
+AttributeEnd
+
+# ---------- Create wood table plane ----------
+AttributeBegin
+  Rotate -90 1 0 0
+    
+  Translate 0.5 1 0
+  Scale 0.4 0.4 0.4
+  
+  AttributeBegin
+    # image 1
+    # Translate 20 -5 0
+
+    # image 2
+    Translate 20 -20 0
+    
+    
+    Scale 5 5 1
+
+    Pattern "table" "woodTx"
+
+    Attribute "displacementbound" "sphere" [0.5] "coordinatesystem" ["object"]
+
+    Displace "PxrDisplace" "woodDisp"
+      "float dispAmount" [0.1]
+      "reference float dispScalar" ["woodTx:Bout"]
+
+
+
+    Bxdf "PxrDisney" "woodMaterial"
+      "reference color baseColor" ["woodTx:Cout"]
+
+
+    Patch "bilinear" "P" [ -10 -10 -2.15  -10 10 -2.15  10 -10 -2.15 10 10 -2.15]
+  AttributeEnd
+
+   # ---------- Set up spikes shader ----------
+  Attribute "displacementbound" "sphere" [1.0] "coordinatesystem" ["object"]
+
+  Pattern "spikes" "diskTx"
+		"color Cin" [ 1.0 0.12 0.0 ]
+
+  Displace "PxrDisplace" "myDisp"
+    "float dispAmount" [ 1.0 ]
+    "reference float dispScalar" [ "diskTx:dispAmount" ]
+
+
+	Bxdf "PxrDisney" "forBall"
+		"reference color baseColor" ["diskTx:Cout"]
+		"reference float specular" ["diskTx:Sout"]
+		"reference float roughness" ["diskTx:Rout"]
+
+	TransformBegin
+    # image 1
+    # Rotate -90 1 0 0.5
+    
+
+    # image 2
+    Rotate -12 0 1 0
+
+		Sphere 2 -2 2 360
+    TransformEnd
+AttributeEnd
+
+
+
+WorldEnd
